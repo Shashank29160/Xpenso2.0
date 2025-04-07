@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+    <!-- Calculator Popup -->
+    <div class="calculator-popup" id="calculator-popup">
+        <div class="calculator-header">
+            <h3>Calculator</h3>
+            <span class="close-calculator">&times;</span>
+        </div>
+        <div class="calculator-content">
+            <div class="calculator-display">
+                <input type="text" id="calc-display" readonly>
+            </div>
+            <div class="calculator-buttons">
+                <button class="calc-btn">7</button>
+                <button class="calc-btn">8</button>
+                <button class="calc-btn">9</button>
+                <button class="calc-btn">/</button>
+                <button class="calc-btn">4</button>
+                <button class="calc-btn">5</button>
+                <button class="calc-btn">6</button>
+                <button class="calc-btn">*</button>
+                <button class="calc-btn">1</button>
+                <button class="calc-btn">2</button>
+                <button class="calc-btn">3</button>
+                <button class="calc-btn">-</button>
+                <button class="calc-btn">0</button>
+                <button class="calc-btn">.</button>
+                <button class="calc-btn">=</button>
+                <button class="calc-btn">+</button>
+                <button class="calc-btn clear-btn">C</button>
+            </div>
+        </div>
+    </div>
+    <button id="toggle-calculator" class="calc-toggle-btn">Calculator</button>
+
+    <div class="container">
+        <header>
+            <h1>Financial Tracker</h1>
+            <nav>
+                <button class="nav-btn active" data-tab="dashboard">Dashboard</button>
+                <button class="nav-btn" data-tab="hdfc">HDFC Bank</button>
+                <button class="nav-btn" data-tab="postal">Postal Bank</button>
+                <button class="nav-btn" data-tab="splits">Split Expenses</button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="tab-content active">
+                <h2>Financial Summary</h2>
+                <div class="balance-cards">
+                    <div class="balance-card">
+                        <h3>HDFC Bank</h3>
+                        <p class="balance" id="hdfc-balance">₹0.00</p>
+                        <button class="action-btn" id="add-hdfc-balance">Set Balance</button>
+                    </div>
+                    <div class="balance-card">
+                        <h3>Postal Bank</h3>
+                        <p class="balance" id="postal-balance">₹0.00</p>
+                        <button class="action-btn" id="add-postal-balance">Set Balance</button>
+                    </div>
+                    <div class="balance-card">
+                        <h3>Split Expenses</h3>
+                        <p><span>Pending: </span><span id="split-pending">₹0.00</span></p>
+                        <p><span>Settled: </span><span id="split-settled">₹0.00</span></p>
+                    </div>
+                </div>
+
+                <div class="dashboard-charts">
+                    <div class="chart-container">
+                        <h3>Expense Breakdown</h3>
+                        <canvas id="expense-chart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Transaction History</h3>
+                        <canvas id="transaction-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="recent-transactions">
+                    <h3>Recent Transactions</h3>
+                    <div class="transaction-filters">
+                        <select id="filter-account">
+                            <option value="all">All Accounts</option>
+                            <option value="hdfc">HDFC Bank</option>
+                            <option value="postal">Postal Bank</option>
+                            <option value="split">Split Expenses</option>
+                        </select>
+                        <input type="text" id="search-transaction" placeholder="Search transactions...">
+                    </div>
+                    <table id="recent-transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Account</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-transactions-body">
+                            <!-- Transactions will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- HDFC Bank Section -->
+            <section id="hdfc" class="tab-content">
+                <h2>HDFC Bank Transactions</h2>
+                <div class="account-summary">
+                    <h3>Current Balance: <span id="hdfc-current-balance">₹0.00</span></h3>
+                    <button class="action-btn" id="hdfc-set-initial">Set Initial Balance</button>
+                </div>
+                
+                <div class="transaction-form">
+                    <h3>Add New Transaction</h3>
+                    <form id="hdfc-transaction-form">
+                        <div class="form-group">
+                            <label for="hdfc-amount">Amount</label>
+                            <input type="number" id="hdfc-amount" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hdfc-type">Type</label>
+                            <select id="hdfc-type" required>
+                                <option value="expense">Expense</option>
+                                <option value="income">Income</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="hdfc-date">Date & Time</label>
+                            <input type="datetime-local" id="hdfc-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hdfc-category">Category</label>
+                            <select id="hdfc-category" required>
+                                <option value="Food">Food</option>
+                                <option value="Travel">Travel</option>
+                                <option value="Bills">Bills</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Health">Health</option>
+                                <option value="Education">Education</option>
+                                <option value="Udhari">Udhar</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="hdfc-description">Description</label>
+                            <textarea id="hdfc-description" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Add Transaction</button>
+                    </form>
+                </div>
+
+                <div class="transaction-history">
+                    <h3>Transaction History</h3>
+                    <div class="transaction-filters">
+                        <select id="hdfc-filter-category">
+                            <option value="all">All Categories</option>
+                            <option value="Food">Food</option>
+                            <option value="Travel">Travel</option>
+                            <option value="Bills">Bills</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Health">Health</option>
+                            <option value="Education">Education</option>
+                            <option value="Udhari">Udhar</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <input type="text" id="hdfc-search" placeholder="Search transactions...">
+                    </div>
+                    <table id="hdfc-transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Balance</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hdfc-transactions-body">
+                            <!-- Transactions will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Postal Bank Section -->
+            <section id="postal" class="tab-content">
+                <h2>Postal Bank Transactions</h2>
+                <div class="account-summary">
+                    <h3>Current Balance: <span id="postal-current-balance">₹0.00</span></h3>
+                    <button class="action-btn" id="postal-set-initial">Set Initial Balance</button>
+                </div>
+                
+                <div class="transaction-form">
+                    <h3>Add New Transaction</h3>
+                    <form id="postal-transaction-form">
+                        <div class="form-group">
+                            <label for="postal-amount">Amount</label>
+                            <input type="number" id="postal-amount" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="postal-type">Type</label>
+                            <select id="postal-type" required>
+                                <option value="expense">Expense</option>
+                                <option value="income">Income</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="postal-date">Date & Time</label>
+                            <input type="datetime-local" id="postal-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="postal-category">Category</label>
+                            <select id="postal-category" required>
+                                <option value="Food">Food</option>
+                                <option value="Travel">Travel</option>
+                                <option value="Bills">Bills</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Health">Health</option>
+                                <option value="Education">Education</option>
+                                <option value="Udhari">Udhar</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="postal-description">Description</label>
+                            <textarea id="postal-description" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Add Transaction</button>
+                    </form>
+                </div>
+
+                <div class="transaction-history">
+                    <h3>Transaction History</h3>
+                    <div class="transaction-filters">
+                        <select id="postal-filter-category">
+                            <option value="all">All Categories</option>
+                            <option value="Food">Food</option>
+                            <option value="Travel">Travel</option>
+                            <option value="Bills">Bills</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Health">Health</option>
+                            <option value="Education">Education</option>
+                            <option value="Udhari">Udhar</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <input type="text" id="postal-search" placeholder="Search transactions...">
+                    </div>
+                    <table id="postal-transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Balance</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="postal-transactions-body">
+                            <!-- Transactions will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Split Expenses Section -->
+            <section id="splits" class="tab-content">
+                <h2>Split Expenses</h2>
+                <div class="split-summary">
+                    <div class="split-stats">
+                        <h3>Pending: <span id="split-pending-amount">₹0.00</span></h3>
+                        <h3>Settled: <span id="split-settled-amount">₹0.00</span></h3>
+                    </div>
+                </div>
+                
+                <div class="transaction-form">
+                    <h3>Add New Split Expense</h3>
+                    <form id="split-expense-form">
+                        <div class="form-group">
+                            <label for="split-description">Description</label>
+                            <input type="text" id="split-description" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="split-total">Total Amount</label>
+                            <input type="number" id="split-total" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="split-date">Date & Time</label>
+                            <input type="datetime-local" id="split-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="split-category">Category</label>
+                            <select id="split-category" required>
+                                <option value="Food">Food</option>
+                                <option value="Travel">Travel</option>
+                                <option value="Bills">Bills</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Health">Health</option>
+                                <option value="Education">Education</option>
+                                <option value="Udhari">Udhar</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Participants</label>
+                            <div id="participants-container">
+                                <div class="participant-row">
+                                    <input type="text" class="participant-name" placeholder="Name" required>
+                                    <input type="number" class="participant-share" placeholder="Share" step="0.01" required>
+                                    <button type="button" class="remove-participant">X</button>
+                                </div>
+                            </div>
+                            <button type="button" id="add-participant" class="action-btn">Add Participant</button>
+                            <button type="button" id="split-equally" class="action-btn">Split Equally</button>
+                        </div>
+                        <button type="submit" class="submit-btn">Add Split Expense</button>
+                    </form>
+                </div>
+                
+                <!-- Add Participants Summary Table here -->
+                <div class="participants-summary">
+                    <h3>Participants Summary</h3>
+                    <table id="participants-summary-table">
+                        <thead>
+                            <tr>
+                                <th>Participant</th>
+                                <th>Total Splits</th>
+                                <th>Total Amount</th>
+                                <th>Pending</th>
+                                <th>Settled</th>
+                            </tr>
+                        </thead>
+                        <tbody id="participants-summary-body">
+                            <!-- Will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Rest of your split expenses section continues here -->
+
+                <div class="split-expenses-list">
+                    <h3>Split Expenses History</h3>
+                    <div class="transaction-filters">
+                        <select id="split-filter-status">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="settled">Settled</option>
+                        </select>
+                        <input type="text" id="split-search" placeholder="Search split expenses...">
+                    </div>
+                    <div id="split-expenses-container">
+                        <!-- Split expenses will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Settlement Sidebar -->
+            </section>
+        </main>
+
+        <div class="modal" id="balance-modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h3 id="modal-title">Set Initial Balance</h3>
+                <form id="balance-form">
+                    <div class="form-group">
+                        <label for="initial-balance">Initial Balance</label>
+                        <input type="number" id="initial-balance" step="0.01" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Set Balance</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal" id="export-modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h3>Export Data</h3>
+                <div class="export-options">
+                    <button id="export-csv" class="action-btn">Export as CSV</button>
+                    <button id="export-pdf" class="action-btn">Export as PDF</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <button id="export-data" class="footer-btn">Export Data</button>
+            <p>&copy; 2025 Financial Tracker</p>
+        </footer>
+    </div>
+<!-- Add this before </body> tag -->
+<button id="show-summary" class="summary-toggle-btn">Show Participants Summary</button>
+<div class="participants-summary-popup" id="participants-summary-popup">
+    <div class="summary-content">
+        <div class="summary-header">
+            <h3>Participants Summary</h3>
+            <span class="close-summary">&times;</span>
+        </div>
+        <table id="participants-summary-table">
+            <thead>
+                <tr>
+                    <th>Participant</th>
+                    <th>Total Splits</th>
+                    <th>Total Amount</th>
+                    <th>Pending</th>
+                    <th>Settled</th>
+                </tr>
+            </thead>
+            <tbody id="participants-summary-body">
+                <!-- Will be populated dynamically -->
+            </tbody>
+        </table>
+    </div>
+</div>
+    <script src="script.js"></script>
+</body>
+</html>
